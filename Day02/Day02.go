@@ -31,56 +31,56 @@ func (c *Computer) canProcess() bool {
 }
 
 func (c *Computer) processNextOp() {
-	nextOp:= (*c.Instructions)[c.CurrentPtr]
+	nextOp := (*c.Instructions)[c.CurrentPtr]
 	if nextOp == 1 {
 		c.processAdd()
-	} else if nextOp ==2{
+	} else if nextOp == 2 {
 		c.processMuli()
-	} else if nextOp == 99{
-		c.Message = fmt.Sprintf("completed at ptr %v" ,c.CurrentPtr)
-		c.CurrentPtr=len(*(c.Instructions))
+	} else if nextOp == 99 {
+		c.Message = fmt.Sprintf("completed at ptr %v", c.CurrentPtr)
+		c.CurrentPtr = len(*(c.Instructions))
 	}
 
 }
 
 func (c *Computer) processAdd() {
-	if c.CurrentPtr+3> len((*c.Instructions)){
-		c.Message = fmt.Sprintf("illegal add at ptr %v" ,c.CurrentPtr)
-		c.CurrentPtr=len(*(c.Instructions))
+	if c.CurrentPtr+3 > len((*c.Instructions)) {
+		c.Message = fmt.Sprintf("illegal add at ptr %v", c.CurrentPtr)
+		c.CurrentPtr = len(*(c.Instructions))
 		return
 	}
 	for i := 1; i <= 3; i++ {
-		opPtr:= (*c.Instructions)[c.CurrentPtr+i]
+		opPtr := (*c.Instructions)[c.CurrentPtr+i]
 		if opPtr > len(*(c.Instructions)) {
-			c.Message = fmt.Sprintf("illegal add at ptr %v" ,c.CurrentPtr)
-			c.CurrentPtr=len(*(c.Instructions))
+			c.Message = fmt.Sprintf("illegal add at ptr %v", c.CurrentPtr)
+			c.CurrentPtr = len(*(c.Instructions))
 			return
 		}
 	}
 
-	theSum:=(*c.Instructions)[(*c.Instructions)[c.CurrentPtr+1]]+(*c.Instructions)[(*c.Instructions)[c.CurrentPtr+2]]
-	(*c.Instructions)[(*c.Instructions)[c.CurrentPtr+3]]=theSum
-	c.CurrentPtr+=4
+	theSum := (*c.Instructions)[(*c.Instructions)[c.CurrentPtr+1]] + (*c.Instructions)[(*c.Instructions)[c.CurrentPtr+2]]
+	(*c.Instructions)[(*c.Instructions)[c.CurrentPtr+3]] = theSum
+	c.CurrentPtr += 4
 }
 
 func (c *Computer) processMuli() {
-	if c.CurrentPtr+3> len((*c.Instructions)){
-		c.Message = fmt.Sprintf("illegal muli at ptr %v" ,c.CurrentPtr)
-		c.CurrentPtr=len(*(c.Instructions))
+	if c.CurrentPtr+3 > len((*c.Instructions)) {
+		c.Message = fmt.Sprintf("illegal muli at ptr %v", c.CurrentPtr)
+		c.CurrentPtr = len(*(c.Instructions))
 		return
 	}
 	for i := 1; i <= 3; i++ {
-		opPtr:= (*c.Instructions)[c.CurrentPtr+i]
+		opPtr := (*c.Instructions)[c.CurrentPtr+i]
 		if opPtr > len(*(c.Instructions)) {
-			c.Message = fmt.Sprintf("illegal muli at ptr %v" ,c.CurrentPtr)
-			c.CurrentPtr=len(*(c.Instructions))
+			c.Message = fmt.Sprintf("illegal muli at ptr %v", c.CurrentPtr)
+			c.CurrentPtr = len(*(c.Instructions))
 			return
 		}
 	}
 
-	theSum:=(*c.Instructions)[(*c.Instructions)[c.CurrentPtr+1]]*(*c.Instructions)[(*c.Instructions)[c.CurrentPtr+2]]
-	(*c.Instructions)[(*c.Instructions)[c.CurrentPtr+3]]=theSum
-	c.CurrentPtr+=4
+	theSum := (*c.Instructions)[(*c.Instructions)[c.CurrentPtr+1]] * (*c.Instructions)[(*c.Instructions)[c.CurrentPtr+2]]
+	(*c.Instructions)[(*c.Instructions)[c.CurrentPtr+3]] = theSum
+	c.CurrentPtr += 4
 }
 
 func isKnownOp(theOp int) bool {
@@ -127,19 +127,34 @@ func solvePt2(inputLines []string) {
 		intArray[k] = singleInt
 	}
 
+	for x := 0; x <= 99; x++ {
 
-	shipPc := Computer{
-		CurrentPtr:   0,
-		Instructions: &intArray,
+		for y := 0; y <= 99; y++ {
+			arrCopy := make([]int, len(intArray))
+			copy(arrCopy, intArray)
+			arrCopy[1] = x
+			arrCopy[2] = y
+			shipPc := Computer{
+				CurrentPtr:   0,
+				Instructions: &arrCopy,
+			}
+
+			for shipPc.canProcess() {
+				shipPc.processNextOp()
+				//shipPc.printState()
+			}
+			if (*shipPc.Instructions)[0] == 19690720 {
+				fmt.Printf("found\n")
+				fmt.Printf("found %v and %v\n", x, y)
+				fmt.Printf("result %v\n", 100*x+y)
+			}
+
+		}
 	}
 
-	for shipPc.canProcess() {
-		shipPc.processNextOp()
-		shipPc.printState()
-	}
 }
 
 func Solve(inputLines []string) {
-	solvePt1(inputLines)
-	//solvePt2(inputLines)
+	//solvePt1(inputLines)
+	solvePt2(inputLines)
 }
